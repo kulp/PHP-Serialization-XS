@@ -17,11 +17,11 @@ _convert_recurse(const ps_node *node, const char *prefix)
     const struct array *what = NULL;
     SV *a = NULL;
     switch (node->type) {
-        case NODE_STRING: result = newSVpv(v->s.val, v->s.len); break;
-        case NODE_INT:    result = newSViv(v->i); break;
-        case NODE_FLOAT:  result = newSVnv(v->d); break;
-        case NODE_BOOL:   result = newSViv(v->b); break;
-        case NODE_NULL:   result = &PL_sv_undef; break;
+        case NODE_STRING: result = newSVpv(v->s.val, v->s.len);      break;
+        case NODE_INT:    result = newSViv(v->i);                    break;
+        case NODE_FLOAT:  result = newSVnv(v->d);                    break;
+        case NODE_BOOL:   result = v->b ? newSViv(1) : &PL_sv_undef; break;
+        case NODE_NULL:   result = &PL_sv_undef;                     break;
         case NODE_OBJECT:
             what = &node->val.o.val;
             typename = v->o.type;

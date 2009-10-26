@@ -21,6 +21,11 @@ _c_decode(input, ....)
         const char *str = SvPV_nolen_const(input);
         ps_read_string_init(ps_state, (void*)str);
         struct ps_node *node = ps_parse(ps_state);
+        if (node == PS_PARSE_FAILURE) {
+            SV *errsv = get_sv("@", TRUE);
+            sv_setsv(errsv, newSVpv("Illegal string", 14));
+            croak(Nullch);
+        }
 
         const char *claxx = NULL;
         if (items > 1 && SvOK(ST(1)))
