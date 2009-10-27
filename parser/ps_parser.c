@@ -58,7 +58,7 @@ static ps_node *ps_handle_bool(struct ps_parser_state *state, int *pos)
     int intval = strtol(&input[2], &next, 10);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     result = malloc(sizeof *result);
@@ -100,7 +100,7 @@ static ps_node *ps_handle_array(struct ps_parser_state *state, int *pos)
     int len = strtol(&input[2], &next, 10);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     int inc = next - input + 2; // 2 for ":{"
@@ -110,8 +110,8 @@ static ps_node *ps_handle_array(struct ps_parser_state *state, int *pos)
         return NULL;
 
     result = malloc(sizeof *result);
-    if (_ps_object_or_array(state, pos, len, &result->val.a) == HD_PARSE_FAILURE)
-        return HD_PARSE_FAILURE;
+    if (_ps_object_or_array(state, pos, len, &result->val.a) == PS_PARSE_FAILURE)
+        return PS_PARSE_FAILURE;
     result->type = NODE_ARRAY;
 
     // check whether we can treat the pairs as an array (zero-indexed, all int
@@ -142,7 +142,7 @@ static ps_node *ps_handle_float(struct ps_parser_state *state, int *pos)
     long double floatval = strtold(&input[2], &next);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     result = malloc(sizeof *result);
@@ -164,7 +164,7 @@ static ps_node *ps_handle_int(struct ps_parser_state *state, int *pos)
     long intval = strtol(&input[2], &next, 10);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     result = malloc(sizeof *result);
@@ -190,38 +190,38 @@ static ps_node *ps_handle_object(struct ps_parser_state *state, int *pos)
     ps_node *result = NULL;
 
     const char *input = state->chunker(state->userdata, *pos, 10);
-    if (!input) return HD_PARSE_FAILURE;
+    if (!input) return PS_PARSE_FAILURE;
 
     char *next;
     int typelen = strtol(&input[2], &next, 10);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     (*pos) += next - input;;
     // +2 for quotes
     input = state->chunker(state->userdata, *pos, typelen + 2);
-    if (!input) return HD_PARSE_FAILURE;
+    if (!input) return PS_PARSE_FAILURE;
 
     char type[typelen + 1];
     memcpy(type, &input[2], typelen);
     type[typelen] = 0;
     (*pos) += typelen + 4;
     input = state->chunker(state->userdata, *pos, 10);
-    if (!input) return HD_PARSE_FAILURE;
+    if (!input) return PS_PARSE_FAILURE;
 
     int len = strtol(input, &next, 10);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     (*pos) += next - input + 2; // 2 for ":{"
 
     result = malloc(sizeof *result);
-    if (_ps_object_or_array(state, pos, len, &result->val.o.val) == HD_PARSE_FAILURE)
-        return HD_PARSE_FAILURE;
+    if (_ps_object_or_array(state, pos, len, &result->val.o.val) == PS_PARSE_FAILURE)
+        return PS_PARSE_FAILURE;
     result->type = NODE_OBJECT;
     result->val.o.type = strdup(type);
     result->val.o.val.is_array = false;
@@ -241,7 +241,7 @@ static ps_node *ps_handle_string(struct ps_parser_state *state, int *pos)
     int len = strtol(&input[2], &next, 10);
     if (next == input) {
         _err("Parse failure in %s", __func__);
-        return HD_PARSE_FAILURE;
+        return PS_PARSE_FAILURE;
     }
 
     (*pos) += next - input + 2; // 1 for colon, 1 for opening quote
@@ -293,7 +293,7 @@ static ps_node *ps_dispatch(struct ps_parser_state *state, int *pos)
 
         default:
             _err("Parse failure in %s", __func__);
-            return HD_PARSE_FAILURE;
+            return PS_PARSE_FAILURE;
     }
 
     return result;
@@ -303,16 +303,16 @@ static int _ps_dump_recurse(FILE *f, const ps_node *node, int level, int flags)
 {
     int rc = 0;
 
-    char spaces[(level + 1) * HD_INDENT_SIZE + 1];
+    char spaces[(level + 1) * PS_INDENT_SIZE + 1];
     memset(spaces, ' ', sizeof spaces - 1);
     spaces[sizeof spaces - 1] = 0;
 
-    char less[level * HD_INDENT_SIZE + 1];
+    char less[level * PS_INDENT_SIZE + 1];
     memset(less, ' ', sizeof less - 1);
     less[sizeof less - 1] = 0;
 
     const union nodeval *v = &node->val;
-    bool pretty = flags & HD_PRINT_PRETTY;
+    bool pretty = flags & PS_PRINT_PRETTY;
 
     const struct array *what = NULL;
     switch (node->type) {
