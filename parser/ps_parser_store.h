@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef HD_PARSER_STORE_H_
-#define HD_PARSER_STORE_H_
+#ifndef PS_PARSER_STORE_H_
+#define PS_PARSER_STORE_H_
 
 #include <stddef.h>
 

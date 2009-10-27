@@ -1,5 +1,5 @@
-#ifndef HD_PARSER_H_
-#define HD_PARSER_H_
+#ifndef PS_PARSER_H_
+#define PS_PARSER_H_
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -42,12 +42,12 @@ struct ps_node {
 
 typedef int (*ps_dumper_t)(FILE *f, const ps_node *node, int flags);
 
-#define HD_PRINT_PRETTY 1
+#define PS_PRINT_PRETTY 1
 
-#define HD_PARSE_FAILURE ((void*)-1)
+#define PS_PARSE_FAILURE ((void*)-1)
 
-#ifndef HD_INDENT_SIZE
-#define HD_INDENT_SIZE 4
+#ifndef PS_INDENT_SIZE
+#define PS_INDENT_SIZE 4
 #endif
 
 /**
@@ -80,7 +80,7 @@ int ps_set_userdata(struct ps_parser_state *state, void *data);
  *
  * @param state the parser state
  *
- * @return a @c node or @c HD_PARSE_FAILURE on undifferentiated error
+ * @return a @c node or @c PS_PARSE_FAILURE on undifferentiated error
  */
 ps_node *ps_parse(struct ps_parser_state *state);
 
@@ -109,7 +109,7 @@ int ps_dump(FILE *f, const ps_node *node, int flags);
 
 void ps_free(ps_node* ptr);
 
-#endif /* HD_PARSER_H_ */
+#endif /* PS_PARSER_H_ */
 
 /* vim:set ts=4 sw=4 syntax=c.doxygen: */
 
