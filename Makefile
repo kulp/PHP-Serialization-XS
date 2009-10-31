@@ -1,13 +1,15 @@
 LIB_EXT ?= .a
 RANLIB  ?= ranlib
 DEFINES += _POSIX_C_SOURCE=200112L _XOPEN_SOURCE=700
+INCLUDE += parser
 CFLAGS  += -std=c99 -W -Wall -Werror -Wextra -pedantic-errors \
-		   $(addprefix -D,$(DEFINES)) -Wno-unused-parameter
+		   $(addprefix -D,$(DEFINES)) $(addprefix -I,$(INCLUDE)) \
+		   -Wno-unused-parameter
 CFLAGS  += -g # for debugging only
-LDLIBS  += -lyaml
 CFILES  += $(wildcard *.c)
-TARGETS += ps2yaml
+#TARGETS += ps2yaml
 
+vpath %.h parser
 vpath %.c parser
 
 STORE_C = $(wildcard parser/*store.c)
@@ -19,6 +21,7 @@ libphpserialize$(LIB_EXT): ps_parser.o $(STORE_O)
 	$(AR) cr $@ $^
 	$(RANLIB) $@
 
+ps2yaml: LDLIBS += -lyaml
 ps2yaml: ps2yaml.o ps_parser.o
 ifeq ($(USE_MMAP),1)
 ps2yaml: DEFINES += USE_MMAP

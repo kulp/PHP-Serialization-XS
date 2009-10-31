@@ -19,6 +19,12 @@
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
+#include <yaml.h>
+
+#define _err(...) do { \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
+} while (0)
 
 void usage(const char *me)
 {
@@ -33,6 +39,112 @@ void usage(const char *me)
            "file is given, the output will be repeatedly overwritten, not\n"
            "appended to."
            , me);
+}
+
+static int node_emitter(yaml_emitter_t *e, const ps_node *node)
+{
+    int rc = 0;
+
+    enum { NONE, SCALAR, COLLECTION } mode = NONE;
+
+    yaml_event_t event;
+
+    yaml_char_t *tag = NULL;
+    const struct array *where = NULL;
+    char *what;
+    char tempbuf[20];
+    int len;
+    switch (node->type) {
+        case NODE_INT:
+            mode = SCALAR;
+            len  = sprintf(what = tempbuf, "%lld", node->val.i);
+            break;
+        case NODE_BOOL:
+            mode = SCALAR;
+            what = node->val.b ? "true" : "false";
+            len  = strlen(what);
+            break;
+        case NODE_STRING:
+            mode = SCALAR;
+            what = node->val.s.val;
+            len  = node->val.s.len;
+            break;
+        case NODE_NULL:
+            mode = SCALAR;
+            what = "~";
+            len = 1;
+            break;
+        case NODE_OBJECT:
+            tag = (yaml_char_t*)node->val.o.type;
+            where = &node->val.o.val;
+            goto inside_array;
+        case NODE_ARRAY:
+            where = &node->val.a;
+        inside_array:
+            mode = COLLECTION;
+            yaml_mapping_start_event_initialize(&event, NULL, tag, 0,
+                    YAML_BLOCK_MAPPING_STYLE);
+            yaml_emitter_emit(e, &event);
+
+            for (int i = 0; i < where->len; i++) {
+                if (!rc) rc = node_emitter(e, where->pairs[i].key);
+                if (!rc) rc = node_emitter(e, where->pairs[i].val);
+            }
+
+            yaml_mapping_end_event_initialize(&event);
+            yaml_emitter_emit(e, &event);
+            break;
+        default:
+            _err("Unrecognized node type '%c' (%d)", node->type, node->type);
+            return -1;
+    }
+
+    if (mode == SCALAR) {
+        yaml_scalar_event_initialize(&event, NULL, NULL, (yaml_char_t*)what,
+                len, true, true, YAML_PLAIN_SCALAR_STYLE);
+        yaml_emitter_emit(e, &event);
+    }
+
+    return rc;
+}
+
+int ps_yaml(FILE *f, const ps_node *node, int flags)
+{
+    int rc = 0;
+
+    yaml_emitter_t emitter;
+    yaml_event_t event;
+
+    yaml_emitter_initialize(&emitter);
+
+    yaml_emitter_set_output_file(&emitter, f);
+
+    yaml_stream_start_event_initialize(&event, YAML_UTF8_ENCODING);
+    if (!yaml_emitter_emit(&emitter, &event))
+        goto error;
+
+    yaml_document_start_event_initialize(&event, NULL, NULL, NULL, 0);
+    if (!yaml_emitter_emit(&emitter, &event))
+        goto error;
+
+    rc = node_emitter(&emitter, node);
+
+    yaml_document_end_event_initialize(&event, 1);
+    if (!yaml_emitter_emit(&emitter, &event))
+        goto error;
+
+    yaml_stream_end_event_initialize(&event);
+    if (!yaml_emitter_emit(&emitter, &event))
+        goto error;
+
+done:
+    yaml_emitter_delete(&emitter);
+    return rc;
+
+error:
+    rc = -1;
+
+    goto done;
 }
 
 static int process(struct ps_parser_state *state, ps_dumper_t dumper,
@@ -68,7 +180,7 @@ static int process(struct ps_parser_state *state, ps_dumper_t dumper,
     }
 
     ps_node *result = ps_parse(state);
-    rc = dumper(f, result, HD_PRINT_PRETTY);
+    rc = dumper(f, result, PS_PRINT_PRETTY);
     rc = (*p_fini)(state);
     rc = ps_fini(&state);
     ps_free(result);
