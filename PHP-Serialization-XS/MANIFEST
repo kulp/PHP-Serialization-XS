@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+ppport.h
+README
+XS.xs
+t/PHP-Serialization-XS.t
+lib/PHP/Serialization/XS.pm
