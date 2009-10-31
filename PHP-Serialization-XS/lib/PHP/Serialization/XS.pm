@@ -20,7 +20,7 @@ XSLoader::load('PHP::Serialization::XS', $VERSION);
 
 sub unserialize {
     my ($str, $class) = @_;
-    return _c_decode($str, $class);
+    return _c_decode($str || "", $class);
 }
 
 sub decode {
