@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+extern void (*ps_parser_error_handler)(const char *msg);
+
 struct ps_parser_state;
 typedef struct ps_node ps_node;
 struct ps_node {

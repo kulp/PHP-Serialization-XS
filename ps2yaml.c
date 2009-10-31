@@ -180,6 +180,9 @@ static int process(struct ps_parser_state *state, ps_dumper_t dumper,
     }
 
     ps_node *result = ps_parse(state);
+    if (result == PS_PARSE_FAILURE)
+        goto error;
+
     rc = dumper(f, result, PS_PRINT_PRETTY);
     rc = (*p_fini)(state);
     rc = ps_fini(&state);
@@ -187,7 +190,11 @@ static int process(struct ps_parser_state *state, ps_dumper_t dumper,
 
     fclose(f);
 
+done:
     return rc;
+error:
+    rc = -1;
+    goto done;
 }
 
 int main(int argc, char *argv[])

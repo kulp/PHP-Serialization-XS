@@ -12,9 +12,17 @@
 #include <syck.h>
 #include <unistd.h>
 
+void (*ps_parser_error_handler)(const char *msg);
+
 #define _err(...) do { \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, "\n"); \
+    char str[snprintf(NULL, 0, __VA_ARGS__) + 1]; \
+    snprintf(str, sizeof str, __VA_ARGS__); \
+    if (ps_parser_error_handler) { \
+        ps_parser_error_handler(str); \
+    } else { \
+        fprintf(stderr, __VA_ARGS__); \
+        fprintf(stderr, "\n"); \
+    } \
 } while (0)
 
 static int compare_pairs(const void *a, const void *b)
