@@ -64,7 +64,7 @@ static ps_node *ps_handle_bool(struct ps_parser_state *state, int *pos)
     char *next;
     int intval = strtol(&input[2], &next, 10);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -106,7 +106,7 @@ static ps_node *ps_handle_array(struct ps_parser_state *state, int *pos)
     char *next;
     int len = strtol(&input[2], &next, 10);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -148,7 +148,7 @@ static ps_node *ps_handle_float(struct ps_parser_state *state, int *pos)
     char *next;
     long double floatval = strtold(&input[2], &next);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -170,7 +170,7 @@ static ps_node *ps_handle_int(struct ps_parser_state *state, int *pos)
     char *next;
     long intval = strtol(&input[2], &next, 10);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -202,7 +202,7 @@ static ps_node *ps_handle_object(struct ps_parser_state *state, int *pos)
     char *next;
     int typelen = strtol(&input[2], &next, 10);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -220,7 +220,7 @@ static ps_node *ps_handle_object(struct ps_parser_state *state, int *pos)
 
     int len = strtol(input, &next, 10);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -247,7 +247,7 @@ static ps_node *ps_handle_string(struct ps_parser_state *state, int *pos)
     char *next;
     int len = strtol(&input[2], &next, 10);
     if (next == input) {
-        _err("Parse failure in %s", __func__);
+        _err("ERROR: Parse failure in %s", __func__);
         return PS_PARSE_FAILURE;
     }
 
@@ -299,7 +299,7 @@ static ps_node *ps_dispatch(struct ps_parser_state *state, int *pos)
         case ';': (*pos)++; result = ps_dispatch(state, pos); break;
 
         default:
-            _err("Parse failure in %s", __func__);
+            _err("ERROR: Parse failure in %s", __func__);
             return PS_PARSE_FAILURE;
     }
 
