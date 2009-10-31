@@ -17,11 +17,11 @@ _convert_recurse(const ps_node *node, const char *prefix)
     const struct array *what = NULL;
     SV *a = NULL;
     switch (node->type) {
-        case NODE_STRING: result = newSVpv(v->s.val, v->s.len);      break;
-        case NODE_INT:    result = newSViv(v->i);                    break;
-        case NODE_FLOAT:  result = newSVnv(v->d);                    break;
-        case NODE_BOOL:   result = v->b ? newSViv(1) : &PL_sv_undef; break;
-        case NODE_NULL:   result = &PL_sv_undef;                     break;
+        case NODE_STRING: result = newSVpv(v->s.val, v->s.len);            break;
+        case NODE_INT:    result = newSViv(v->i);                          break;
+        case NODE_FLOAT:  result = newSVnv(v->d);                          break;
+        case NODE_BOOL:   result = newSVsv(v->b ? &PL_sv_yes : &PL_sv_no); break;
+        case NODE_NULL:   result = newSVsv(&PL_sv_undef);                  break;
         case NODE_OBJECT:
             what = &node->val.o.val;
             typename = v->o.type;
@@ -29,7 +29,8 @@ _convert_recurse(const ps_node *node, const char *prefix)
         case NODE_ARRAY: {
             what = &node->val.a;
         inside_array:
-            if (what->is_array) {
+            // len == 0 could be hash still
+            if (what->is_array && what->len != 0) {
                 a = (SV*)newAV();
                 av_extend((AV*)a, what->len - 1);
                 for (int i = 0; i < what->len; i++)
