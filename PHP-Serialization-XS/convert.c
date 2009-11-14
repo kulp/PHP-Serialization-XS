@@ -4,11 +4,10 @@
 
 #include "ppport.h"
 
-#include "ps_parser.h"
-#include "ps_parser_internal.h"
+#include "convert.h"
 
 SV *
-_convert_recurse(const ps_node *node, const char *prefix)
+_convert_recurse(const ps_node *node, int flags, const char *prefix)
 {
     SV *result = &PL_sv_undef;
 
@@ -30,20 +29,20 @@ _convert_recurse(const ps_node *node, const char *prefix)
             what = &node->val.a;
         inside_array:
             // len == 0 could be hash still
-            if (what->is_array && what->len != 0) {
-                a = (SV*)newAV();
-                av_extend((AV*)a, what->len - 1);
-                for (int i = 0; i < what->len; i++)
-                    av_push((AV*)a, _convert_recurse(what->pairs[i].val, prefix));
-            } else {
+            if (flags & PS_XS_PREFER_HASH || !what->is_array) {
                 a = (SV*)newHV();
                 for (int i = 0; i < what->len; i++) {
                     int len;
-                    char *key = SvPV(_convert_recurse(what->pairs[i].key, prefix), len);
-                    SV   *val =      _convert_recurse(what->pairs[i].val, prefix);
+                    char *key = SvPV(_convert_recurse(what->pairs[i].key, flags, prefix), len);
+                    SV   *val =      _convert_recurse(what->pairs[i].val, flags, prefix);
 
                     hv_store((HV*)a, key, len, val, 0);
                 }
+            } else {
+                a = (SV*)newAV();
+                av_extend((AV*)a, what->len - 1);
+                for (int i = 0; i < what->len; i++)
+                    av_push((AV*)a, _convert_recurse(what->pairs[i].val, flags, prefix));
             }
 
             result = newRV(a);
