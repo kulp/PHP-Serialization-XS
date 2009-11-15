@@ -1,3 +1,5 @@
+/* vim:set ts=4 sw=4 et syntax=c.doxygen: */
+
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"

@@ -11,8 +11,8 @@
 #include "convert.h"
 
 typedef struct self {
-    int flags;
-    SV *parent;
+    int flags;  ///< flags controlling deserialization
+    SV *parent; ///< a PHP::Serialization object
 } *self;
 
 static char _error_msg[256] = "Unknown error";
