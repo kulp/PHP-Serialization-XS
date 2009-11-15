@@ -4,3 +4,6 @@ Revision history for Perl extension PHP::Serialization::XS.
 	- original version; created by h2xs 1.23 with options
 		-A -n PHP::Serialization::XS -b 5.8.8
 
+0.02  Sun Nov 15 16:21:35 2009
+    - added typemap to MANIFEST
+
