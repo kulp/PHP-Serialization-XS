@@ -7,3 +7,7 @@ Revision history for Perl extension PHP::Serialization::XS.
 0.02  Sun Nov 15 16:21:35 2009
     - added typemap to MANIFEST
 
+0.03  Mon Nov 16 09:35:00 2009
+    - added convert.c and convert.h to MANIFEST. Maybe I should test
+      the dist ?
+
