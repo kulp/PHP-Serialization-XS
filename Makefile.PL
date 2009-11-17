@@ -13,7 +13,8 @@ WriteMakefile(
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I. -Iphpserialize/parser', # e.g., '-I. -I/usr/include/other'
     OBJECT            => '$(O_FILES) phpserialize/parser/stringstore.o phpserialize/parser/ps_parser.o', # link all the C files too
-    CCFLAGS           => '-std=c99 -D_XOPEN_SOURCE=700',
+    # TODO switch to C89 or otherwise permit building on Solaris
+    CCFLAGS           => '-fPIC -std=c99 -D_XOPEN_SOURCE=700',
 );
 
 # TODO this shouldn't be necessary
