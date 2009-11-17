@@ -9,9 +9,19 @@ WriteMakefile(
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/PHP/Serialization/XS.pm', # retrieve abstract from module
        AUTHOR         => 'Darren Kulp <kulp@cpan.org>') : ()),
-    LIBS              => ['-L. -Lphpserialize -lphpserialize -lyaml'],
+    LIBS              => [ ],
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I. -Iphpserialize/parser', # e.g., '-I. -I/usr/include/other'
-    OBJECT            => '$(O_FILES)', # link all the C files too
+    OBJECT            => '$(O_FILES) phpserialize/parser/stringstore.o phpserialize/parser/ps_parser.o', # link all the C files too
     CCFLAGS           => '-std=c99 -D_XOPEN_SOURCE=700',
 );
+
+# TODO this shouldn't be necessary
+# TODO this is probably GCC-specific in some way
+sub MY::postamble {
+	return <<'EOF';
+phpserialize/parser/%.o: phpserialize/parser/%.c
+	$(CC) $(CCFLAGS) -c -o $@ $<
+EOF
+}
+

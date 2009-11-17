@@ -11,3 +11,6 @@ Revision history for Perl extension PHP::Serialization::XS.
     - added convert.c and convert.h to MANIFEST. Maybe I should test
       the dist ?
 
+0.04  Mon Nov 16 22:20:00 2009
+	- I am very bad at this packaging thing. Fixed MANIFEST and included
+	  required C and H files from phpserialize.
