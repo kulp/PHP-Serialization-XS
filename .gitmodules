@@ -1,3 +1,3 @@
-[submodule "PHP-Serialization-XS/phpserialize"]
-	path = PHP-Serialization-XS/phpserialize
+[submodule "phpserialize"]
+	path = phpserialize
 	url = git://github.com/kulp/phpserialize.git
