@@ -10,6 +10,7 @@
 
 #define PS_XS_PREFER_HASH  1
 #define PS_XS_PREFER_ARRAY 2
+#define PS_XS_PREFER_UNDEF 4
 
 SV* _convert_recurse(const ps_node *, int, const char *);
 

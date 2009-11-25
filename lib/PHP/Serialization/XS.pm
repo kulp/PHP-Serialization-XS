@@ -18,6 +18,7 @@ our $VERSION = '0.05';
 our %DEFAULT_OPTS = (
     prefer_hash  => 0,
     prefer_array => 1,
+    prefer_undef => 0,
 );
 
 require XSLoader;

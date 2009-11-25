@@ -56,11 +56,19 @@ static void option(pTHX_ self me, SV *tag, SV *value)
         if (SvIV(value)) {
             me->flags |=  PS_XS_PREFER_HASH;
             me->flags &= ~PS_XS_PREFER_ARRAY;
+            me->flags &= ~PS_XS_PREFER_UNDEF;
+        }
+    } else if (!strcmp(key, "prefer_undef")) {
+        if (SvIV(value)) {
+            me->flags |=  PS_XS_PREFER_UNDEF;
+            me->flags &= ~PS_XS_PREFER_HASH;
+            me->flags &= ~PS_XS_PREFER_ARRAY;
         }
     } else if (!strcmp(key, "prefer_array")) {
         if (SvIV(value)) {
             me->flags |=  PS_XS_PREFER_ARRAY;
             me->flags &= ~PS_XS_PREFER_HASH;
+            me->flags &= ~PS_XS_PREFER_UNDEF;
         }
     } else {
         warn("Unknown option %s => %s", key, val);
@@ -95,6 +103,7 @@ new(char *class, ...)
         /// super-class's new
         /// @todo permit passing parameters to this call
         me->parent = eval_pv("PHP::Serialization->new", true);
+        SvREFCNT_inc(me->parent);
         SvREFCNT_inc(RETVAL);
     OUTPUT:
         RETVAL
