@@ -2,6 +2,7 @@
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
+my $ccflags = $Config::Config{ccflags} || '';
 WriteMakefile(
     NAME              => 'PHP::Serialization::XS',
     VERSION_FROM      => 'lib/PHP/Serialization/XS.pm', # finds $VERSION
@@ -14,7 +15,7 @@ WriteMakefile(
     INC               => '-I. -Iphpserialize/parser', # e.g., '-I. -I/usr/include/other'
     OBJECT            => '$(O_FILES) phpserialize/parser/stringstore.o phpserialize/parser/ps_parser.o', # link all the C files too
     # TODO switch to C89 or otherwise permit building on Solaris
-    CCFLAGS           => '-fPIC -std=c99 -D_XOPEN_SOURCE=700',
+    CCFLAGS           => "-fPIC -std=c99 -D_XOPEN_SOURCE=700 $ccflags",
 );
 
 # TODO this shouldn't be necessary

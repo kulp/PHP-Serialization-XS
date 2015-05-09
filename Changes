@@ -21,3 +21,6 @@ Revision history for Perl extension PHP::Serialization::XS.
 0.06  Tue Nov 24 20:40:00 2009
     - Bugfix for ->encode
     - Added prefer_undef
+
+0.07  Sat May  9 18:31:17 CDT 2015
+    - Respect existing CCFLAGS
