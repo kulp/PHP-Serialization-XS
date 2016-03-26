@@ -37,7 +37,7 @@ _convert_recurse(const ps_node *node, int flags, const char *prefix)
                     // len == 0 could be hash still
                     a = (SV*)newHV();
                     for (int i = 0; i < what->len; i++) {
-                        int len;
+                        STRLEN len;
                         char *key = SvPV(_convert_recurse(what->pairs[i].key, flags, prefix), len);
                         SV   *val =      _convert_recurse(what->pairs[i].val, flags, prefix);
 
