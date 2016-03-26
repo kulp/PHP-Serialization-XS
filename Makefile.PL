@@ -15,15 +15,6 @@ WriteMakefile(
     INC               => '-I. -Iphpserialize/parser', # e.g., '-I. -I/usr/include/other'
     OBJECT            => '$(O_FILES) phpserialize/parser/stringstore.o phpserialize/parser/ps_parser.o', # link all the C files too
     # TODO switch to C89 or otherwise permit building on Solaris
-    CCFLAGS           => "-fPIC -std=c99 -D_XOPEN_SOURCE=700 $ccflags",
+    CCFLAGS           => "-fPIC -std=c99 $ccflags",
 );
-
-# TODO this shouldn't be necessary
-# TODO this is probably GCC-specific in some way
-sub MY::postamble {
-	return <<'EOF';
-phpserialize/parser/%.o: phpserialize/parser/%.c
-	$(CC) $(CCFLAGS) -c -o $@ $<
-EOF
-}
 
