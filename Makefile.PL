@@ -13,7 +13,8 @@ WriteMakefile(
     LIBS              => [ ],
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I. -Iphpserialize/parser', # e.g., '-I. -I/usr/include/other'
-    OBJECT            => '$(O_FILES) phpserialize/parser/stringstore.o phpserialize/parser/ps_parser.o', # link all the C files too
+    OBJECT            => '$(O_FILES) phpserialize/parser/stringstore.o phpserialize/parser/ps_parser.o',
+    LDFROM            => '$(O_FILES) stringstore.o ps_parser.o', # link all the C files too
     # TODO switch to C89 or otherwise permit building on Solaris
     CCFLAGS           => "-fPIC -std=c99 $ccflags",
 );
