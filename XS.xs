@@ -18,7 +18,7 @@ typedef struct self {
 static char _error_msg[256] = "Unknown error";
 static void _register_error(const char *msg)
 {
-    strncpy(_error_msg, msg, sizeof _error_msg);
+    my_strlcpy(_error_msg, msg, sizeof _error_msg);
 }
 
 static void _croak(const char *msg)
