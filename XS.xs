@@ -103,7 +103,6 @@ new(char *class, ...)
         /// super-class's new
         /// @todo permit passing parameters to this call
         me->parent = eval_pv("PHP::Serialization->new", true);
-        SvREFCNT_inc(me->parent);
         SvREFCNT_inc(RETVAL);
     OUTPUT:
         RETVAL
