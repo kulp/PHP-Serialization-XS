@@ -127,6 +127,7 @@ _c_decode(self me, SV *input, ....)
 
         RETVAL = _convert_recurse(node, me->flags, claxx);
 
+        ps_read_string_fini(ps_state);
         ps_free(node);
         ps_fini(&ps_state);
     OUTPUT:
