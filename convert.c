@@ -38,8 +38,8 @@ _convert_recurse(const ps_node *node, int flags, const char *prefix)
                     a = (SV*)newHV();
                     for (int i = 0; i < what->len; i++) {
                         STRLEN len;
-                        char *key = SvPV(_convert_recurse(what->pairs[i].key, flags, prefix), len);
-                        SV   *val =      _convert_recurse(what->pairs[i].val, flags, prefix);
+                        char *key = SvPV(sv_2mortal(_convert_recurse(what->pairs[i].key, flags, prefix)), len);
+                        SV   *val =                 _convert_recurse(what->pairs[i].val, flags, prefix);
 
                         hv_store((HV*)a, key, len, val, 0);
                     }
