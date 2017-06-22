@@ -50,7 +50,7 @@ _convert_recurse(const ps_node *node, int flags, const char *prefix)
                         av_push((AV*)a, _convert_recurse(what->pairs[i].val, flags, prefix));
                 }
 
-                result = newRV(a);
+                result = newRV_noinc(a);
                 if (typename) {
                     bool should_free = false;
                     char *built = typename;
