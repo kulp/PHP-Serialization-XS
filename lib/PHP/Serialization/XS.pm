@@ -27,10 +27,12 @@ XSLoader::load('PHP::Serialization::XS', $VERSION);
 # in XS
 sub new;
 
+my $default = __PACKAGE__->new(%DEFAULT_OPTS);
+
 sub unserialize
 {
     my ($str, $class) = @_;
-    return __PACKAGE__->new(%DEFAULT_OPTS)->decode($str, $class);
+    return $default->decode($str, $class);
 }
 
 sub serialize
@@ -41,7 +43,7 @@ sub serialize
 sub decode
 {
     my ($self, $str, $class) = @_;
-    $self = $self->new(%DEFAULT_OPTS) unless ref $self;
+    $self = $default unless ref $self;
     return $self->_c_decode($str || "", $class);
 }
 
