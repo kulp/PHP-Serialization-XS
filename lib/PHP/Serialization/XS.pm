@@ -118,6 +118,13 @@ reasons, but if you wish your code to act consistently, you should
 always use the OO interface and specify the behavior you want (this
 configurability is not available through the procedural interface).
 
+=head1 BUGS
+
+Yes.
+
+Prior to version 0.09, there were significant memory leaks (thanks for the bug
+report goes to Rune Hylleberg).
+
 =head1 TODO
 
 More tests.
@@ -134,7 +141,7 @@ Tests stolen shamelessly from Tomas Doran's L<PHP::Serialization> package.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2009 by Darren Kulp
+Copyright (C) 2009-2017 by Darren Kulp
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.0 or,
