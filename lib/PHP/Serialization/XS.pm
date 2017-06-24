@@ -15,16 +15,10 @@ our @EXPORT_OK = @{ $EXPORT_TAGS{all} };
 
 our $VERSION = '0.08';
 
-our %DEFAULT_OPTS = (
-    prefer_hash  => 0,
-    prefer_array => 1,
-    prefer_undef => 0,
-);
-
 require XSLoader;
 XSLoader::load('PHP::Serialization::XS', $VERSION);
 
-my $default = __PACKAGE__->new(%DEFAULT_OPTS);
+my $default = __PACKAGE__->new(prefer_array => 1);
 
 sub new
 {
@@ -111,12 +105,14 @@ array stands out : if there are no keys, should the resulting structure
 be an array or a hash ? Neither answer works universally, so the code
 that uses the Perl structure has to check for both cases on every access.
 
-For this reason, PHP::Serialization::XS accepts two additional options
-to its C<new()> constructor, C<prefer_hash> and C<prefer_array>.
-Currently, C<prefer_array> is the default, for backward-compatibility
-reasons, but if you wish your code to act consistently, you should
-always use the OO interface and specify the behavior you want (this
-configurability is not available through the procedural interface).
+For this reason, PHP::Serialization::XS accepts additional options to
+its C<new()> constructor : C<prefer_hash>, C<prefer_array>, or
+C<prefer_undef> (use only one at a time). C<prefer_undef> allows
+autovivification.  Currently, C<prefer_array> is the default, for
+backward-compatibility reasons, but if you wish your code to act
+consistently, you should always use the OO interface and specify the
+behavior you want (this configurability is not available through the
+procedural interface).
 
 =head1 BUGS
 
