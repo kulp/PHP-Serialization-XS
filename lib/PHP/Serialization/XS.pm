@@ -24,10 +24,24 @@ our %DEFAULT_OPTS = (
 require XSLoader;
 XSLoader::load('PHP::Serialization::XS', $VERSION);
 
-# in XS
-sub new;
-
 my $default = __PACKAGE__->new(%DEFAULT_OPTS);
+
+sub new
+{
+    my $class = shift;
+    # depend on PHP::Serialize using a blessed hash
+    my %args = @_;
+    my $self = $class->SUPER::new(%args);
+
+    # precedence order was really undefined, but now we match legacy behaviour
+    $self->{flags} =
+        $args{prefer_hash}  ? 0 :
+        $args{prefer_undef} ? 2 :
+        $args{prefer_array} ? 1 :
+        1; # default is prefer_array
+
+    return $self;
+}
 
 sub unserialize
 {
@@ -44,15 +58,10 @@ sub decode
 {
     my ($self, $str, $class) = @_;
     $self = $default unless ref $self;
-    return $self->_c_decode($str || "", $class);
+    return _c_decode($str || "", $self->{flags}, $class);
 }
 
-sub encode
-{
-    my ($self, @rest) = @_;
-    my $parent = $self->_get_parent;
-    return $parent->encode(@rest);
-}
+# encode method is handled by super class
 
 1;
 __END__

@@ -9,7 +9,7 @@
 #include "convert.h"
 
 SV *
-_convert_recurse(const ps_node *node, int flags, const char *prefix)
+_convert_recurse(const ps_node *node, enum type_preference prefer, const char *prefix)
 {
     SV *result = NULL;
 
@@ -30,16 +30,16 @@ _convert_recurse(const ps_node *node, int flags, const char *prefix)
         case NODE_ARRAY: {
             what = &node->val.a;
         inside_array:
-            if (!typename && what->len == 0 && (flags & PS_XS_PREFER_UNDEF)) {
+            if (!typename && what->len == 0 && prefer == PREFER_UNDEF) {
                 result = newSVsv(&PL_sv_undef);
             } else {
-                if (flags & PS_XS_PREFER_HASH || !what->is_array) {
+                if (prefer == PREFER_HASH || !what->is_array) {
                     // len == 0 could be hash still
                     a = (SV*)newHV();
                     for (int i = 0; i < what->len; i++) {
                         STRLEN len;
-                        char *key = SvPV(sv_2mortal(_convert_recurse(what->pairs[i].key, flags, prefix)), len);
-                        SV   *val =                 _convert_recurse(what->pairs[i].val, flags, prefix);
+                        char *key = SvPV(sv_2mortal(_convert_recurse(what->pairs[i].key, prefer, prefix)), len);
+                        SV   *val =                 _convert_recurse(what->pairs[i].val, prefer, prefix);
 
                         hv_store((HV*)a, key, len, val, 0);
                     }
@@ -47,7 +47,7 @@ _convert_recurse(const ps_node *node, int flags, const char *prefix)
                     a = (SV*)newAV();
                     av_extend((AV*)a, what->len - 1);
                     for (int i = 0; i < what->len; i++)
-                        av_push((AV*)a, _convert_recurse(what->pairs[i].val, flags, prefix));
+                        av_push((AV*)a, _convert_recurse(what->pairs[i].val, prefer, prefix));
                 }
 
                 result = newRV_noinc(a);
