@@ -14,9 +14,7 @@ _convert_recurse(const ps_node *node, enum type_preference prefer, const char *p
     SV *result = NULL;
 
     const union nodeval *v = &node->val;
-    char *typename = NULL;
     const struct array *what = NULL;
-    SV *a = NULL;
     switch (node->type) {
         case NODE_STRING: result = newSVpv(v->s.val, v->s.len);            break;
         case NODE_INT:    result = newSViv(v->i);                          break;
@@ -24,15 +22,14 @@ _convert_recurse(const ps_node *node, enum type_preference prefer, const char *p
         case NODE_BOOL:   result = newSVsv(v->b ? &PL_sv_yes : &PL_sv_no); break;
         case NODE_NULL:   result = newSVsv(&PL_sv_undef);                  break;
         case NODE_OBJECT:
-            what = &node->val.o.val;
-            typename = v->o.type;
-            goto inside_array;
-        case NODE_ARRAY: {
-            what = &node->val.a;
-        inside_array:
-            if (!typename && what->len == 0 && prefer == PREFER_UNDEF) {
+        case NODE_ARRAY:
+            what = node->type == NODE_OBJECT
+                ? &node->val.o.val
+                : &node->val.a;
+            if (node->type != NODE_OBJECT && what->len == 0 && prefer == PREFER_UNDEF) {
                 result = newSVsv(&PL_sv_undef);
             } else {
+                SV *a = NULL;
                 if (prefer == PREFER_HASH || !what->is_array) {
                     // len == 0 could be hash still
                     a = (SV*)newHV();
@@ -51,25 +48,21 @@ _convert_recurse(const ps_node *node, enum type_preference prefer, const char *p
                 }
 
                 result = newRV_noinc(a);
-                if (typename) {
-                    bool should_free = false;
-                    char *built = typename;
+                if (node->type == NODE_OBJECT) {
+                    char *typename = v->o.type;
                     if (prefix) {
-                        should_free = true;
-                        size_t size = snprintf(NULL, 0, "%s::%s", prefix, typename);
-                        built = malloc(size + 1);
-                        snprintf(built, size + 1, "%s::%s", prefix, typename);
-                    }
-
-                    sv_bless(result, gv_stashpv(built, true));
-
-                    if (should_free)
+                        size_t size = strlen(prefix) + sizeof "::" + strlen(typename) + sizeof "\0";
+                        char *built = malloc(size);;
+                        snprintf(built, size, "%s::%s", prefix, typename);
+                        sv_bless(result, gv_stashpv(built, true));
                         free(built);
+                    } else {
+                        sv_bless(result, gv_stashpv(typename, true));
+                    }
                 }
             }
 
             break;
-        }
     }
 
     return result;
