@@ -32,3 +32,5 @@ Revision history for Perl extension PHP::Serialization::XS.
     - Corrected memory leaks and reduced total amount of XS code while
       speeding up the general use case.
 
+0.10  Fri Jun 23 21:00:53 2017
+    - Mended bad MANIFEST
