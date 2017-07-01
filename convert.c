@@ -43,11 +43,8 @@ _convert_struct(const ps_node *node, enum type_preference prefer, const char *pr
         if (node->type == NODE_OBJECT) {
             char *typename = v->o.type;
             if (prefix) {
-                size_t size = strlen(prefix) + sizeof "::" + strlen(typename) + sizeof "\0";
-                char *built = malloc(size);;
-                snprintf(built, size, "%s::%s", prefix, typename);
-                sv_bless(result, gv_stashpv(built, true));
-                free(built);
+                SV *built = sv_2mortal(newSVpvf("%s::%s", prefix, typename));
+                sv_bless(result, gv_stashsv(built, true));
             } else {
                 sv_bless(result, gv_stashpv(typename, true));
             }
